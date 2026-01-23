@@ -1,0 +1,8 @@
+{
+  "name": "Nirapad Digital - Women's Cyber Safety",
+  "description": "A comprehensive platform for reporting online violence, accessing legal support, and promoting digital safety for women in Bangladesh and South Asia.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
