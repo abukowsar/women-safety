@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Upload, Eye, EyeOff, CheckCircle, ShieldAlert } from 'lucide-react';
-import { ReportType, Case } from '../types';
+import { ReportType, Case } from '@/types';
 
 interface ReportFormProps {
   onSubmitReport: (report: Omit<Case, 'id' | 'status' | 'date' | 'riskScore' | 'evidenceCount'>) => void;
