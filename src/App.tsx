@@ -1,30 +1,25 @@
-
 import React, { useState } from 'react';
-import Navbar from './components/Navbar';
-import ChatWidget from './components/ChatWidget';
-import AdminDashboard from './components/AdminDashboard';
-import Footer from './components/Footer';
+import Layout from '@/components/layout/Layout';
+import AdminDashboard from '@/components/AdminDashboard';
 
 // Pages
-import Home from './components/Home';
-import EducationPage from './components/EducationPage';
-import LegalPage from './components/LegalPage';
-import NewsPage from './components/NewsPage';
-import ReportForm from './components/ReportForm';
-import AboutPage from './components/AboutPage';
-import PrivacyPage from './components/PrivacyPage';
-import VolunteerPage from './components/VolunteerPage';
+import Home from '@/pages/Home';
+import EducationPage from '@/pages/EducationPage';
+import LegalPage from '@/pages/LegalPage';
+import NewsPage from '@/pages/NewsPage';
+import ReportForm from '@/pages/ReportForm';
+import AboutPage from '@/pages/AboutPage';
+import PrivacyPage from '@/pages/PrivacyPage';
+import VolunteerPage from '@/pages/VolunteerPage';
 
-import { Language, Case, ReportType, Page } from './types';
-import { translations } from './utils/translations';
+import { Language, Case, ReportType, Page } from '@/types';
+
+import { useLanguage } from '@/hooks/useLanguage';
 
 function App() {
-  const [currentLang, setCurrentLang] = useState<Language>('bn');
+  const { currentLang, setCurrentLang } = useLanguage('bn');
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [showAdmin, setShowAdmin] = useState(false);
-  
-  // RTL support for Urdu, Pashto, Dhivehi
-  const isRtl = ['ur', 'ps', 'dv'].includes(currentLang);
   
   // Mock Database
   const [reports, setReports] = useState<Case[]>([
@@ -117,22 +112,14 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900" dir={isRtl ? 'rtl' : 'ltr'}>
-      <Navbar 
-        currentLang={currentLang} 
-        setLanguage={setCurrentLang} 
-        onAdminClick={() => setShowAdmin(true)}
-        onNavigate={handleNavigation}
-      />
-      
-      <main className="min-h-[calc(100vh-80px-300px)]">
-        {renderPage()}
-      </main>
-
-      <Footer currentLang={currentLang} onNavigate={handleNavigation} />
-
-      <ChatWidget />
-    </div>
+    <Layout
+      currentLang={currentLang}
+      setLanguage={setCurrentLang}
+      onAdminClick={() => setShowAdmin(true)}
+      onNavigate={handleNavigation}
+    >
+      {renderPage()}
+    </Layout>
   );
 }
 

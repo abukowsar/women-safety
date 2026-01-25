@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Calendar, ArrowRight } from 'lucide-react';
-import { Language } from '../types';
-import { translations } from '../utils/translations';
+import { Language } from '@/types';
+import { translations } from '@/utils/translations';
 
 interface NewsPageProps {
   currentLang: Language;

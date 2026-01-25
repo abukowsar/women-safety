@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Shield, Phone } from 'lucide-react';
-import { Language, Page } from '../types';
-import { translations } from '../utils/translations';
+import { Language, Page } from '@/types';
+import { translations } from '@/utils/translations';
 
 interface FooterProps {
   currentLang: Language;
