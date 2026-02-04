@@ -1,19 +1,20 @@
-
 export interface NavItem {
   label: string;
   href: string;
 }
 
 export enum ReportType {
-  Cyberbullying = "Cyberbullying",
+  Cyberstalking = "Cyberstalking",
   Deepfake = "Deepfake",
-  ImageAbuse = "Image Abuse",
+  ImageAbuse = "Image-Based Abuse",
   Harassment = "Online Harassment",
-  IdentityTheft = "Identity Theft"
+  IdentityTheft = "Identity Theft",
+  OnlineThreats = "Online Threats",
+  Other = "Other",
 }
 
 export interface ChatMessage {
-  role: 'user' | 'model';
+  role: "user" | "model";
   text: string;
   isError?: boolean;
 }
@@ -28,19 +29,39 @@ export interface StatProps {
   label: string;
 }
 
-// Added codes for: Urdu (Pakistan), Nepali (Nepal), Sinhala (Sri Lanka), 
+// Added codes for: Urdu (Pakistan), Nepali (Nepal), Sinhala (Sri Lanka),
 // Dhivehi (Maldives), Pashto (Afghanistan), Dzongkha (Bhutan)
-export type Language = 'en' | 'bn' | 'hi' | 'ur' | 'ne' | 'si' | 'dv' | 'ps' | 'dz';
+export type Language =
+  | "en"
+  | "bn"
+  | "hi"
+  | "ur"
+  | "ne"
+  | "si"
+  | "dv"
+  | "ps"
+  | "dz";
 
-export type Page = 'home' | 'problems' | 'legal' | 'news' | 'report' | 'about' | 'privacy' | 'volunteer';
+export type Page =
+  | "home"
+  | "problems"
+  | "legal"
+  | "news"
+  | "report"
+  | "about"
+  | "privacy"
+  | "volunteer";
 
 export interface Case {
   id: string;
   type: ReportType;
   description: string;
-  status: 'pending' | 'investigating' | 'resolved' | 'dismissed';
+  status: "pending" | "investigating" | "resolved" | "dismissed";
   date: string;
   isAnonymous: boolean;
+  victimName?: string;
+  victimPhone?: string;
+  evidence?: string[];
   riskScore: number; // AI detected risk 0-100
   evidenceCount: number;
 }

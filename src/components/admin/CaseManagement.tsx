@@ -1,13 +1,19 @@
-import React from 'react';
-import { Filter, ArrowUpRight } from 'lucide-react';
-import { Case } from '@/types';
+import React, { useState } from "react";
+import { Filter, ArrowUpRight } from "lucide-react";
+import { Case } from "@/types";
+import CaseDetailModal from "./CaseDetailModal";
 
 interface CaseManagementProps {
   cases: Case[];
-  onUpdateStatus: (id: string, status: Case['status']) => void;
+  onUpdateStatus: (id: string, status: Case["status"]) => void;
 }
 
-const CaseManagement: React.FC<CaseManagementProps> = ({ cases, onUpdateStatus }) => {
+const CaseManagement: React.FC<CaseManagementProps> = ({
+  cases,
+  onUpdateStatus,
+}) => {
+  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -22,7 +28,7 @@ const CaseManagement: React.FC<CaseManagementProps> = ({ cases, onUpdateStatus }
         </div>
       </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-slate-50 text-slate-500 text-xs uppercase">
@@ -37,15 +43,25 @@ const CaseManagement: React.FC<CaseManagementProps> = ({ cases, onUpdateStatus }
             </thead>
             <tbody className="divide-y divide-slate-100">
               {cases.map((c) => (
-                <tr key={c.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-mono text-sm text-slate-500">{c.id}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-slate-800">{c.type}</td>
-                  <td className="px-6 py-4 text-sm text-slate-500 truncate max-w-xs">{c.description}</td>
-                  <td className="px-6 py-4 text-sm text-slate-500">{new Date(c.date).toLocaleDateString()}</td>
+                <tr key={c._id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-6 py-4 font-mono text-sm text-slate-500">
+                    {c.id}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-medium text-slate-800">
+                    {c.type}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500 truncate max-w-xs">
+                    {c.description}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-slate-500">
+                    {new Date(c.date).toLocaleDateString()}
+                  </td>
                   <td className="px-6 py-4">
-                    <select 
+                    <select
                       value={c.status}
-                      onChange={(e) => onUpdateStatus(c.id, e.target.value as any)}
+                      onChange={(e) =>
+                        onUpdateStatus(c._id, e.target.value as any)
+                      }
                       className="text-xs border-none bg-slate-100 rounded-full px-3 py-1 font-medium focus:ring-0 cursor-pointer text-slate-800"
                     >
                       <option value="pending">Pending</option>
@@ -54,7 +70,12 @@ const CaseManagement: React.FC<CaseManagementProps> = ({ cases, onUpdateStatus }
                     </select>
                   </td>
                   <td className="px-6 py-4 text-right">
-                      <button className="text-slate-400 hover:text-brand-600 text-sm font-medium">Details</button>
+                    <button
+                      onClick={() => setSelectedCase(c)}
+                      className="text-brand-600 hover:text-brand-800 text-sm font-bold bg-brand-50 px-3 py-1 rounded-lg transition-colors"
+                    >
+                      Details
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -62,6 +83,17 @@ const CaseManagement: React.FC<CaseManagementProps> = ({ cases, onUpdateStatus }
           </table>
         </div>
       </div>
+
+      {selectedCase && (
+        <CaseDetailModal
+          caseItem={selectedCase}
+          onClose={() => setSelectedCase(null)}
+          onUpdateStatus={(id, status) => {
+            onUpdateStatus(id, status);
+            setSelectedCase((prev) => (prev ? { ...prev, status } : null));
+          }}
+        />
+      )}
     </div>
   );
 };

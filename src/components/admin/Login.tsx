@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Lock } from 'lucide-react';
+import React, { useState } from "react";
+import { Lock } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface LoginProps {
   onLogin: () => void;
@@ -7,15 +8,24 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin, onClose }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'admin') {
+    setLoading(true);
+    setError("");
+
+    try {
+      await login(email, password);
       onLogin();
-    } else {
-      alert('Invalid credentials. Use admin/admin');
+    } catch (err: any) {
+      setError(err || "Invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -28,33 +38,50 @@ const Login: React.FC<LoginProps> = ({ onLogin, onClose }) => {
           <p className="text-slate-400 text-sm">Law Enforcement Access Only</p>
         </div>
         <form onSubmit={handleLogin} className="p-8 space-y-6">
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-lg text-red-700 text-sm">
+              {error}
+            </div>
+          )}
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Username</label>
-            <input 
-              type="text" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full !bg-white !text-slate-900 border-slate-300 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 border p-2.5" 
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-white text-slate-900 border-slate-300 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 border p-2.5"
+              placeholder="authority@example.com"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
-            <input 
-              type="password" 
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Password
+            </label>
+            <input
+              type="password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full !bg-white !text-slate-900 border-slate-300 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 border p-2.5" 
+              className="w-full bg-white text-slate-900 border-slate-300 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 border p-2.5"
+              placeholder="••••••••"
             />
           </div>
-          <button type="submit" className="w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition-colors">
-            Login to Dashboard
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full bg-slate-900 text-white py-3 rounded-lg font-bold hover:bg-slate-800 transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+          >
+            {loading ? "Authenticating..." : "Login to Dashboard"}
           </button>
-          <div className="text-center text-xs text-slate-400 mt-4">
-            Demo Credentials: User: <b>admin</b> / Pass: <b>admin</b>
-          </div>
         </form>
         <div className="bg-slate-50 p-4 border-t border-slate-100 text-center">
-          <button onClick={onClose} className="text-slate-500 hover:text-slate-800 text-sm">
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-slate-800 text-sm"
+          >
             Return to Website
           </button>
         </div>
