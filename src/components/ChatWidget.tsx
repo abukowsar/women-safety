@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, Send, X, Bot, Loader2 } from 'lucide-react';
-import { ChatMessage } from '../types';
+import { ChatMessage } from '@/types';
 import { sendMessageToGemini } from '../services/geminiService';
 
 const ChatWidget: React.FC = () => {
