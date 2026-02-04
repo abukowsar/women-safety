@@ -1,9 +1,9 @@
 
 import React from 'react';
-import Hero from './Hero';
+import Hero from '@/components/Hero';
 import { Video, Fingerprint, Lock, Shield, ArrowRight, MapPin } from 'lucide-react';
-import { Language, Page } from '../types';
-import { translations } from '../utils/translations';
+import { Language, Page } from '@/types';
+import { translations } from '@/utils/translations';
 
 interface HomeProps {
   currentLang: Language;

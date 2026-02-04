@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Language } from '../types';
-import { translations } from '../utils/translations';
+import { Language } from '@/types';
+import { translations } from '@/utils/translations';
 
 interface AboutPageProps {
   currentLang: Language;
