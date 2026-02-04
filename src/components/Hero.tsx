@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { AlertTriangle, LifeBuoy, ShieldCheck } from 'lucide-react';
-import { Language, Page } from '../types';
-import { translations } from '../utils/translations';
+import { Language, Page } from '@/types';
+import { translations } from '@/utils/translations';
 
 interface HeroProps {
   currentLang: Language;
