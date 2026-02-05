@@ -36,6 +36,8 @@ const Layout: React.FC<LayoutProps> = ({
 
       <Footer currentLang={currentLang} onNavigate={onNavigate} />
 
+     
+
       <ChatWidget />
     </div>
   );
