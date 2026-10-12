@@ -8,6 +8,11 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
+      // Forward API and public media requests to the Express server in /server.
+      proxy: {
+        '/api': 'http://localhost:5000',
+        '/uploads': 'http://localhost:5000',
+      },
     },
     plugins: [react()],
     define: {
