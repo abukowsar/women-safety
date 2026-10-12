@@ -3,7 +3,13 @@ export interface NavItem {
   href: string;
 }
 
+// Keep in sync with COMPLAINT_TYPES in server/src/constants.js.
 export enum ReportType {
+  SexualViolence = "Sexual Violence",
+  DomesticViolence = "Domestic Violence",
+  DowryAbuse = "Dowry Abuse",
+  ChildMarriage = "Child Marriage",
+  SexualHarassment = "Sexual Harassment",
   Cyberstalking = "Cyberstalking",
   Deepfake = "Deepfake",
   ImageAbuse = "Image-Based Abuse",
@@ -50,7 +56,16 @@ export type Page =
   | "report"
   | "about"
   | "privacy"
-  | "volunteer";
+  | "volunteer"
+  | "help"
+  | "topic"
+  | "tools"
+  | "helplines"
+  | "track"
+  | "callback";
+
+/** Navigate to a page; `topic` selects the guide shown on the "topic" page. */
+export type Navigate = (page: Page, topic?: import("@/data/topics").TopicId) => void;
 
 export interface Case {
   id: string;

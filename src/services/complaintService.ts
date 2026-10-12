@@ -21,6 +21,11 @@ export const complaintService = {
     const res = await api.put(`/complaints/${id}/status`, { status });
     return res.data;
   },
+  /** Evidence is served only to staff, so it is fetched with the auth header and shown as a blob URL. */
+  getEvidence: async (path: string) => {
+    const res = await api.get(path, { responseType: "blob" });
+    return URL.createObjectURL(res.data);
+  },
   assign: async (id: string, userId: string) => {
     const res = await api.put(`/complaints/${id}/assign`, { userId });
     return res.data;

@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
-import AdminDashboard from "@/components/AdminDashboard";
-import { AuthProvider } from "@/context/AuthContext";
+import AdminApp from "@/admin/AdminApp";
 
 // Pages
 import Home from "@/pages/Home";
@@ -12,28 +11,36 @@ import ReportForm from "@/pages/ReportForm";
 import AboutPage from "@/pages/AboutPage";
 import PrivacyPage from "@/pages/PrivacyPage";
 import VolunteerPage from "@/pages/VolunteerPage";
+import HelpCenterPage from "@/pages/HelpCenterPage";
+import TopicPage from "@/pages/TopicPage";
+import ToolsPage from "@/pages/ToolsPage";
+import HelplinesPage from "@/pages/HelplinesPage";
+import TrackPage from "@/pages/TrackPage";
+import CallbackPage from "@/pages/CallbackPage";
 
-import { Language, Case, ReportType, Page } from "@/types";
+import { Navigate, Page } from "@/types";
+import { TopicId } from "@/data/topics";
 
 import { useLanguage } from "@/hooks/useLanguage";
 
 function App() {
   const { currentLang, setCurrentLang } = useLanguage("bn");
   const [currentPage, setCurrentPage] = useState<Page>("home");
-  const [showAdmin, setShowAdmin] = useState(false);
+  const [currentTopic, setCurrentTopic] = useState<TopicId>("mental-health");
 
-  const handleNavigation = (page: Page) => {
+  // Lets CSS pick the right font for the script in use.
+  useEffect(() => {
+    document.documentElement.lang = currentLang;
+  }, [currentLang]);
+
+  const handleNavigation: Navigate = (page, topic) => {
+    if (topic) setCurrentTopic(topic);
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (showAdmin) {
-    return (
-      <AdminDashboard
-        currentLang={currentLang}
-        onClose={() => setShowAdmin(false)}
-      />
-    );
+  if (window.location.pathname.startsWith("/admin")) {
+    return <AdminApp />;
   }
 
   // Router Logic
@@ -41,6 +48,14 @@ function App() {
     switch (currentPage) {
       case "home":
         return <Home currentLang={currentLang} onNavigate={handleNavigation} />;
+      case "help":
+        return <HelpCenterPage currentLang={currentLang} onNavigate={handleNavigation} />;
+      case "topic":
+        return <TopicPage currentLang={currentLang} topicId={currentTopic} onNavigate={handleNavigation} />;
+      case "tools":
+        return <ToolsPage currentLang={currentLang} />;
+      case "helplines":
+        return <HelplinesPage currentLang={currentLang} onNavigate={handleNavigation} />;
       case "problems":
         return <EducationPage currentLang={currentLang} />;
       case "legal":
@@ -48,13 +63,17 @@ function App() {
       case "news":
         return <NewsPage currentLang={currentLang} />;
       case "report":
-        return <ReportForm />;
+        return <ReportForm currentLang={currentLang} onNavigate={handleNavigation} />;
+      case "track":
+        return <TrackPage currentLang={currentLang} onNavigate={handleNavigation} />;
+      case "callback":
+        return <CallbackPage currentLang={currentLang} onNavigate={handleNavigation} />;
       case "about":
         return <AboutPage currentLang={currentLang} />;
       case "privacy":
         return <PrivacyPage currentLang={currentLang} />;
       case "volunteer":
-        return <VolunteerPage currentLang={currentLang} />;
+        return <VolunteerPage currentLang={currentLang} onNavigate={handleNavigation} />;
       default:
         return <Home currentLang={currentLang} onNavigate={handleNavigation} />;
     }
@@ -63,11 +82,14 @@ function App() {
   return (
     <Layout
       currentLang={currentLang}
+      currentPage={currentPage}
       setLanguage={setCurrentLang}
-      onAdminClick={() => setShowAdmin(true)}
+      onAdminClick={() => window.location.assign("/admin")}
       onNavigate={handleNavigation}
     >
-      {renderPage()}
+      <div key={currentPage + currentTopic} className="animate-fade-up">
+        {renderPage()}
+      </div>
     </Layout>
   );
 }
