@@ -7,11 +7,13 @@ import React, {
 } from "react";
 import api from "@/services/api";
 
-interface User {
+export interface User {
   _id: string;
   name: string;
   email: string;
   role: "admin" | "law_enforcement" | "ngo_support";
+  active?: boolean;
+  createdAt?: string;
 }
 
 interface AuthContextType {
@@ -34,7 +36,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const expire = () => {
+      setToken(null);
+      setUser(null);
+    };
+    window.addEventListener("auth:expired", expire);
+    return () => window.removeEventListener("auth:expired", expire);
+  }, []);
+
+  useEffect(() => {
     const loadUser = async () => {
+      setLoading(true);
       if (token) {
         try {
           const res = await api.get("/auth/me");
