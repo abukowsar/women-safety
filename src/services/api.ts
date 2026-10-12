@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/v1";
+// Same-origin in dev (Vite proxies /api to the server); set VITE_API_URL when the API lives elsewhere.
+const API_URL = import.meta.env.VITE_API_URL || "/api/v1";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -19,6 +20,19 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  },
+);
+
+// An expired or revoked session anywhere signs the staff member out.
+api.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    const isLogin = error.config?.url?.includes("/auth/login");
+    if (error.response?.status === 401 && !isLogin && localStorage.getItem("token")) {
+      localStorage.removeItem("token");
+      window.dispatchEvent(new Event("auth:expired"));
+    }
     return Promise.reject(error);
   },
 );

@@ -47,7 +47,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ currentLang }) => {
                   <img
                     src={
                       item.image
-                        ? `http://localhost:5000${item.image}`
+                        ? item.image
                         : "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=400&q=80"
                     }
                     alt={item.title}
