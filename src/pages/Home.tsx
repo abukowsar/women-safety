@@ -1,162 +1,236 @@
-
 import React from 'react';
-import Hero from '@/components/Hero';
-import { Video, Fingerprint, Lock, Shield, ArrowRight, MapPin } from 'lucide-react';
-import { Language, Page } from '@/types';
+import {
+  ArrowRight,
+  Wind,
+  ClipboardList,
+  LogOut,
+  Ear,
+  HeartHandshake,
+  Users,
+  MapPin,
+} from 'lucide-react';
+import { Language, Navigate } from '@/types';
 import { translations } from '@/utils/translations';
+import { pick, ui, L } from '@/data/i18n';
+import { topics } from '@/data/topics';
+import { helplines } from '@/data/helplines';
+import TopicCard from '@/components/support/TopicCard';
+import HomeHero from '@/components/HomeHero';
+import HelplineCard from '@/components/support/HelplineCard';
 
 interface HomeProps {
   currentLang: Language;
-  onNavigate: (page: Page) => void;
+  onNavigate: Navigate;
 }
 
-// Reusable Section Component
-const Section: React.FC<{ 
-  id?: string; 
-  title: string; 
-  subtitle?: string; 
-  className?: string; 
-  children: React.ReactNode 
-}> = ({ id, title, subtitle, className = "bg-white", children }) => (
-  <section id={id} className={`py-16 ${className} scroll-mt-24`}>
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">{title}</h2>
-        {subtitle && <p className="mt-4 text-xl text-slate-500">{subtitle}</p>}
-      </div>
-      {children}
+const SectionTitle: React.FC<{ eyebrow: string; title: string; subtitle?: string; action?: React.ReactNode }> = ({
+  eyebrow,
+  title,
+  subtitle,
+  action,
+}) => (
+  <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <div className="max-w-2xl">
+      <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">{eyebrow}</p>
+      <h2 className="mt-2 font-display text-3xl font-semibold text-brand-950 sm:text-4xl">{title}</h2>
+      {subtitle && <p className="mt-3 text-lg text-slate-600">{subtitle}</p>}
     </div>
-  </section>
-);
-
-const FeatureCard: React.FC<{ icon: React.ReactNode; title: string; desc: string; color: string; btnText: string; onClick: () => void }> = ({ icon, title, desc, color, btnText, onClick }) => (
-  <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 transition-all hover:-translate-y-2 hover:shadow-xl duration-300 group" style={{ borderColor: color }}>
-    <div className="inline-flex items-center justify-center p-3 rounded-full bg-slate-50 mb-4 group-hover:bg-slate-100 transition-colors" style={{ color: color }}>
-      {icon}
-    </div>
-    <h3 className="text-xl font-bold text-slate-900 mb-2">{title}</h3>
-    <p className="text-slate-600">{desc}</p>
-    <button 
-      onClick={onClick}
-      className="mt-4 text-sm font-medium text-slate-500 hover:text-slate-900 flex items-center group-hover:translate-x-1 transition-transform"
-    >
-      {btnText} <ArrowRight className="ml-1 h-4 w-4" />
-    </button>
+    {action}
   </div>
 );
 
 const Home: React.FC<HomeProps> = ({ currentLang, onNavigate }) => {
+  const lang = currentLang;
   const t = translations[currentLang];
+
+  const tools = [
+    {
+      icon: Wind,
+      title: { en: 'Calm breathing', bn: 'শান্ত শ্বাস-প্রশ্বাস' },
+      desc: { en: 'A guided exercise for panic and anxiety.', bn: 'আতঙ্ক ও উদ্বেগের জন্য নির্দেশিত অনুশীলন।' },
+      style: 'from-teal-500 to-emerald-500',
+    },
+    {
+      icon: ClipboardList,
+      title: { en: 'Safety plan', bn: 'নিরাপত্তা পরিকল্পনা' },
+      desc: { en: 'A private checklist for leaving or staying safer.', bn: 'নিরাপদে থাকা বা বের হওয়ার গোপন চেকলিস্ট।' },
+      style: 'from-brand-600 to-rose-500',
+    },
+    {
+      icon: LogOut,
+      title: { en: 'Quick exit', bn: 'দ্রুত বের হওয়া' },
+      desc: { en: 'One tap, or Esc twice, to leave this site instantly.', bn: 'এক ট্যাপে বা Esc দুবার চেপে সাথে সাথে সাইট ছাড়ুন।' },
+      style: 'from-slate-700 to-slate-900',
+    },
+  ];
+
+  const supportSteps = [
+    { icon: Ear, title: { en: 'Listen', bn: 'শুনুন' }, desc: { en: 'Give her time. Do not interrupt or judge.', bn: 'সময় দিন। বাধা দেবেন না, বিচার করবেন না।' } },
+    { icon: HeartHandshake, title: { en: 'Believe', bn: 'বিশ্বাস করুন' }, desc: { en: 'Say "It is not your fault. I am with you."', bn: 'বলুন "এটা তোমার দোষ নয়। আমি তোমার সাথে আছি।"' } },
+    { icon: Users, title: { en: 'Connect', bn: 'যুক্ত করুন' }, desc: { en: 'Help her reach a helpline, doctor or lawyer, at her pace.', bn: 'তার নিজের গতিতে হেল্পলাইন, ডাক্তার বা আইনজীবীর সাথে যুক্ত হতে সাহায্য করুন।' } },
+  ];
 
   return (
     <>
-      <Hero currentLang={currentLang} onNavigate={onNavigate} />
-      
-      {/* Key Highlights */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <FeatureCard 
-            icon={<Video className="h-6 w-6" />} 
-            title={t.features.cyberstalking.title}
-            desc={t.features.cyberstalking.desc}
-            color="#ef4444" 
-            btnText={t.features.more}
-            onClick={() => onNavigate('problems')}
-          />
-          <FeatureCard 
-            icon={<Fingerprint className="h-6 w-6" />} 
-            title={t.features.deepfake.title}
-            desc={t.features.deepfake.desc}
-            color="#f97316" 
-            btnText={t.features.more}
-            onClick={() => onNavigate('problems')}
-          />
-          <FeatureCard 
-            icon={<Lock className="h-6 w-6" />} 
-            title={t.features.imageAbuse.title}
-            desc={t.features.imageAbuse.desc}
-            color="#eab308" 
-            btnText={t.features.more}
-            onClick={() => onNavigate('problems')}
-          />
-          <FeatureCard 
-            icon={<Shield className="h-6 w-6" />} 
-            title={t.features.harassment.title}
-            desc={t.features.harassment.desc}
-            color="#ec4899" 
-            btnText={t.features.more}
-            onClick={() => onNavigate('problems')}
-          />
-        </div>
-      </div>
+      <HomeHero currentLang={currentLang} onNavigate={onNavigate} />
 
-      {/* Campaign Section */}
-      <Section id="campaign" title={t.campaign.title} subtitle={t.campaign.subtitle}>
-        <div className="bg-brand-900 rounded-3xl overflow-hidden shadow-2xl relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-900 via-brand-900/80 to-transparent opacity-90 z-10"></div>
-          <img src="https://images.unsplash.com/photo-1590650516494-0c8e4a4dd67e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Campaign Banner" className="w-full h-64 md:h-96 object-cover transform group-hover:scale-105 transition-transform duration-700" />
-          <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-16 text-white">
-            <h3 className="text-2xl md:text-4xl font-bold mb-4">{t.campaign.bannerTitle}</h3>
-            <p className="max-w-xl text-lg mb-6 text-brand-100">{t.campaign.bannerDesc}</p>
-            <div className="flex flex-wrap gap-4">
-              <button 
-                onClick={() => onNavigate('news')}
-                className="bg-white text-brand-900 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors"
-              >
+      {/* Topics */}
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionTitle
+            eyebrow={pick(lang, { en: 'Help center', bn: 'সহায়তা কেন্দ্র' })}
+            title={pick(lang, { en: 'Information for every kind of harm', bn: 'প্রতিটি ধরনের ক্ষতির জন্য তথ্য' })}
+            subtitle={pick(lang, {
+              en: 'Signs to look for, what to do now, how to help someone, and what the law says.',
+              bn: 'লক্ষণ, এখন কী করবেন, কাউকে কীভাবে সাহায্য করবেন, এবং আইন কী বলে।',
+            })}
+          />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {topics.map((topic) => (
+              <TopicCard key={topic.id} topic={topic} lang={lang} onClick={() => onNavigate('topic', topic.id)} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Not your fault */}
+      <section className="px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-brand-950 px-6 py-16 text-center sm:px-16">
+          <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-rose-500/30 blur-3xl" aria-hidden />
+          <div className="absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-brand-500/40 blur-3xl" aria-hidden />
+          <p className="relative mx-auto max-w-3xl font-display text-3xl font-medium leading-snug text-white sm:text-4xl">
+            “{pick(lang, ui.notYourFault)}”
+          </p>
+          <p className="relative mx-auto mt-5 max-w-2xl text-brand-200">
+            {pick(lang, {
+              en: 'Not what you wore, not where you went, not who you trusted. The responsibility belongs only to the person who caused harm.',
+              bn: 'আপনি কী পরেছিলেন, কোথায় গিয়েছিলেন, কাকে বিশ্বাস করেছিলেন — তার জন্য নয়। দায় শুধুমাত্র যে ক্ষতি করেছে তার।',
+            })}
+          </p>
+        </div>
+      </section>
+
+      {/* Tools */}
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionTitle
+            eyebrow={pick(lang, ui.nav.tools)}
+            title={pick(lang, { en: 'Small tools for hard moments', bn: 'কঠিন মুহূর্তের জন্য ছোট টুল' })}
+            action={
+              <button onClick={() => onNavigate('tools')} className="inline-flex items-center gap-1.5 font-semibold text-brand-700 hover:text-brand-900">
+                {pick(lang, { en: 'Open tools', bn: 'টুলগুলো খুলুন' })} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+              </button>
+            }
+          />
+          <div className="grid gap-5 md:grid-cols-3">
+            {tools.map((tool, i) => {
+              const Icon = tool.icon;
+              return (
+                <button
+                  key={i}
+                  onClick={() => onNavigate('tools')}
+                  className={`group rounded-3xl bg-gradient-to-br ${tool.style} p-7 text-left text-white transition-transform hover:-translate-y-1`}
+                >
+                  <Icon className="h-8 w-8 opacity-90" />
+                  <h3 className="mt-10 text-xl font-semibold">{pick(lang, tool.title)}</h3>
+                  <p className="mt-2 text-sm text-white/80">{pick(lang, tool.desc)}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Helplines */}
+      <section className="border-y border-slate-200/70 bg-white py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionTitle
+            eyebrow={pick(lang, ui.nav.helplines)}
+            title={pick(lang, { en: 'Someone is ready to answer', bn: 'কেউ উত্তর দিতে প্রস্তুত' })}
+            subtitle={pick(lang, {
+              en: 'Tap a number to call. Government helplines are free.',
+              bn: 'কল করতে নম্বরে ট্যাপ করুন। সরকারি হেল্পলাইন বিনামূল্যে।',
+            })}
+            action={
+              <button onClick={() => onNavigate('helplines')} className="inline-flex items-center gap-1.5 font-semibold text-brand-700 hover:text-brand-900">
+                {pick(lang, { en: 'All helplines', bn: 'সব হেল্পলাইন' })} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+              </button>
+            }
+          />
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {[helplines.emergency, helplines.women, helplines.emotional, helplines.legal].map((h) => (
+              <HelplineCard key={h.id} helpline={h} lang={lang} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Supporting someone */}
+      <section className="py-20">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
+          <div className="lg:col-span-5">
+            <p className="text-sm font-semibold uppercase tracking-wider text-brand-600">
+              {pick(lang, { en: 'Worried about someone?', bn: 'কাউকে নিয়ে চিন্তিত?' })}
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-semibold text-brand-950 sm:text-4xl">
+              {pick(lang, { en: 'How you respond can change everything', bn: 'আপনার প্রতিক্রিয়া সবকিছু বদলে দিতে পারে' })}
+            </h2>
+            <p className="mt-4 text-lg text-slate-600">
+              {pick(lang, {
+                en: 'Most women tell a friend or relative first. A calm, believing response makes it far more likely she will get help.',
+                bn: 'বেশিরভাগ নারী প্রথমে বন্ধু বা আত্মীয়কে বলেন। শান্ত, বিশ্বাসভরা প্রতিক্রিয়া পেলে তার সাহায্য নেওয়ার সম্ভাবনা অনেক বাড়ে।',
+              })}
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3 lg:col-span-7">
+            {supportSteps.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <div key={i} className="rounded-3xl border border-slate-200 bg-white p-6">
+                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-50 text-brand-700">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-5 font-semibold text-slate-900">{pick(lang, s.title)}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{pick(lang, s.desc)}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Campaign & regional */}
+      <section className="pb-24">
+        <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <div className="flex flex-col justify-between rounded-[2rem] bg-gradient-to-br from-rose-500 to-brand-700 p-8 text-white sm:p-10">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wider text-rose-100">{t.campaign.title}</p>
+              <h3 className="mt-3 font-display text-2xl font-semibold sm:text-3xl">{t.campaign.bannerTitle}</h3>
+              <p className="mt-3 text-rose-50/90">{t.campaign.bannerDesc}</p>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button onClick={() => onNavigate('news')} className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-brand-900 hover:bg-rose-50">
                 {t.campaign.btnEvents}
               </button>
-              <button 
-                onClick={() => onNavigate('volunteer')}
-                className="border border-white text-white px-6 py-2 rounded-full font-bold hover:bg-white/10 transition-colors"
-              >
+              <button onClick={() => onNavigate('volunteer')} className="rounded-full border border-white/50 px-5 py-2.5 text-sm font-semibold hover:bg-white/10">
                 {t.campaign.btnPartner}
               </button>
             </div>
           </div>
-        </div>
-        
-        {/* Partners */}
-        <div className="mt-12">
-          <p className="text-center text-slate-500 mb-6 font-medium uppercase tracking-wide text-xs">{t.campaign.partners}</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-             <span className="text-xl font-bold text-slate-800">UNOPS</span>
-             <span className="text-xl font-bold text-slate-800">a2i</span>
-             <span className="text-xl font-bold text-slate-800">ICT Division</span>
-             <span className="text-xl font-bold text-slate-800">BIISS</span>
-             <span className="text-xl font-bold text-slate-800">Maldives HC</span>
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-8 sm:p-10">
+            <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-brand-600">
+              <MapPin className="h-4 w-4" /> {t.regional.title}
+            </p>
+            <h3 className="mt-3 font-display text-2xl font-semibold text-brand-950 sm:text-3xl">{t.regional.collabTitle}</h3>
+            <p className="mt-3 text-slate-600">{t.regional.collabDesc}</p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {t.regional.countries.map((country) => (
+                <span key={country} className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700">{country}</span>
+              ))}
+            </div>
           </div>
         </div>
-      </Section>
-
-      {/* Regional Collaboration */}
-      <Section id="regional" title={t.regional.title} subtitle={t.regional.subtitle}>
-         <div className="bg-gradient-to-br from-blue-600 to-indigo-800 rounded-3xl p-8 md:p-12 text-white flex flex-col md:flex-row items-center justify-between shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-            <div className="md:w-1/2 mb-8 md:mb-0 relative z-10">
-               <h3 className="text-2xl font-bold mb-4 flex items-center">
-                 <MapPin className="mr-2" /> {t.regional.collabTitle}
-               </h3>
-               <p className="text-blue-100 mb-6 text-lg leading-relaxed">
-                 {t.regional.collabDesc}
-               </p>
-               <div className="flex flex-wrap gap-2">
-                  {t.regional.countries.map(country => (
-                    <span key={country} className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full text-sm transition-colors cursor-default">{country}</span>
-                  ))}
-               </div>
-            </div>
-            <div className="md:w-1/3 relative z-10">
-              <div className="bg-white/10 backdrop-blur-lg p-6 rounded-xl border border-white/20 shadow-lg">
-                <h4 className="font-bold text-xl mb-2">{t.regional.trainingTitle}</h4>
-                <p className="text-sm text-blue-100 mb-4">{t.regional.trainingDesc}</p>
-                <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
-                   <div className="bg-green-400 h-full w-3/4 animate-pulse"></div>
-                </div>
-                <p className="text-right text-xs mt-1 font-mono">75% Complete</p>
-              </div>
-            </div>
-         </div>
-      </Section>
+      </section>
     </>
   );
 };
